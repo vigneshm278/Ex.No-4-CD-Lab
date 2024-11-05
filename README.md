@@ -1,6 +1,7 @@
 # Ex-4-LETTER-FOLLOWED-BY-ANY-NUMBER-OF-LETTERS-OR-DIGITS-USING-YACC-USING-YACC
 RECOGNITION OF A VALID VARIABLE WHICH STARTS WITH A LETTER FOLLOWED BY ANY NUMBER OF LETTERS OR DIGITS USING YACC
-# Date:
+# Date: 
+# Register number: 212223240176
 # Aim:
 To write a YACC program to recognize a valid variable which starts with a letter followed by any number of letters or digits.
 # ALGORITHM
@@ -13,6 +14,73 @@ To write a YACC program to recognize a valid variable which starts with a letter
 7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
 8.	Enter a statement as input and the valid variables are identified as output.
 # PROGRAM
+### var.l
+```
+%{
+#include "y.tab.h"
+#include <stdio.h>
+%}
+
+%%
+
+"int" { return INT; } 
+"float" { return FLOAT; }
+"double" { return DOUBLE; }
+
+[a-zA-Z][a-zA-Z0-9]* {
+    printf("\nIdentifier is %s", yytext);
+    return ID;
+}
+
+[ \t] { /* ignore whitespace */ }
+\n { return 0; } 
+
+. { return yytext[0]; } 
+
+%%
+
+int yywrap() { 
+    return 1; 
+}
+
+```
+### var.y
+```
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+void yyerror(char *s);
+int yylex(void);
+%}
+
+%token ID INT FLOAT DOUBLE
+
+%% 
+D: T L; 
+L: L ',' ID   | ID; 
+T: INT | FLOAT | DOUBLE; 
+
+%% 
+
+extern FILE *yyin;
+
+int main() {
+    
+    // yyin = fopen("input.txt", "r");
+    
+    do {
+        yyparse();
+    } while (!feof(yyin)); 
+    return 0;
+}
+
+void yyerror(char *s) { 
+    fprintf(stderr, "Error: %s\n", s); 
+}
+```
 # Output
+![image](https://github.com/user-attachments/assets/e3414ed4-9e80-425e-be86-b92ea3eae160)
+
 # Result
 A YACC program to recognize a valid variable which starts with a letter followed by any number of letters or digits is executed successfully and the output is verified.
